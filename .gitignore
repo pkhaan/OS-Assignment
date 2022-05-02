@@ -1,4 +1,4 @@
-# Prerequisites
+cd # Prerequisites
 *.d
 
 # Object files
@@ -41,6 +41,10 @@
 *.su
 *.idb
 *.pdb
+
+
+# .idea
+.idea
 
 # Kernel Module Compile Results
 *.mod*
