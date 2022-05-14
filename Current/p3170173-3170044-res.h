@@ -49,6 +49,10 @@ const long time_cash_high = 8;
 
 const float p_card_success = 0.9;
 
+
+
+//DECLARATION OF ASSISTING METHODS IN THE PROGRAM
+
 void print_fail_no_available_seats(){
     printf("Your reservation failed due to no availability of seats.")
 }
@@ -57,10 +61,17 @@ void print_fail_credit_card(){
     printf("Your reservation failed due to credit card issues.")
 }
 
-void print_success(){
+/*Prints the final message for the customer if everything was successful */
+void  print_complete_transaction(int cid, const int* seats, int seats_total)
+{
+    printf("Your reservation has been completed. \nid customer is:  %d \nand your seats are: ", cid);
+    for (int i = 0; i < no_seats; i++)
+    {
+        if (seats[i] == cid) printf("%d seat, ", i);
+    }
+    printf("\nThe total amount is  %.2f € \n\n", seats_total*cost_per_seat);
 
 }
-
 
 
 
