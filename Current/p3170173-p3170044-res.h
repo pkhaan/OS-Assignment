@@ -23,17 +23,17 @@ In here we store tha data needed for the assignment
 #define no_telephones 3;
 #define no_zone_alpha 10;
 #define no_zone_beta 20;
-#define  p_zone_alpha 0.3F;
-#define  p_card_success 0.9F;
-#define cost_per_seat_zoneA 30D;
-#define cost_per_seat_zoneB 20D;
+#define p_zone_alpha 0.3F;
+#define p_card_success 0.9F;
+#define cost_per_seat_zoneA 30UL;
+#define cost_per_seat_zoneB 20UL;
 #define no_seat_low 1;
 #define no_seat_high 5;
 #define time_res_high 1L;
 #define time_res_high 5L;
 #define time_seat_low 5L;
 #define time_seat_high 13L;
-#define  time_cash_low 4L;
+#define time_cash_low 4L;
 #define time_cash_high 8L;
 
 
@@ -42,10 +42,6 @@ In here we store tha data needed for the assignment
 
 //function that makes the call
 void *makeCall(void *threadId);
-
-
-
-
 
 
 //DECLARATION OF ASSISTING METHODS IN THE PROGRAM
