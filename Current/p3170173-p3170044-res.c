@@ -3,7 +3,11 @@
 //
 
 #include "p3170173-p3170044-res.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <time.h>
 
 /*
  * External Variables that have access to each and every thread
