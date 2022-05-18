@@ -1,13 +1,4 @@
-//
-// Created by peter on 5/5/2022.
-//
-
-#ifndef OS_ASSIGNMENT_P3170173_3170044_RES_H
-#define OS_ASSIGNMENT_P3170173_3170044_RES_H
-
-#endif //OS_ASSIGNMENT_P3170173_3170044_RES_H
-
-#pragma once
+//#pragma once
 #include <stdio.h>
 #include <pthread.h>
 #include <stdbool.h>
@@ -19,62 +10,20 @@
 In here we store tha data needed for the assignment
 */
 
-#define no_seats_per_row 10;
-#define no_telephones 3;
-#define no_zone_alpha 10;
-#define no_zone_beta 20;
-#define p_zone_alpha 0.3F;
-#define p_card_success 0.9F;
-#define cost_per_seat_zoneA 30UL;
-#define cost_per_seat_zoneB 20UL;
-#define no_seat_low 1;
-#define no_seat_high 5;
-#define time_res_high 1L;
-#define time_res_high 5L;
-#define time_seat_low 5L;
-#define time_seat_high 13L;
-#define time_cash_low 4L;
-#define time_cash_high 8L;
-
-
-
-
-
-//function that makes the call
-void *makeCall(void *threadId);
-
-
-//DECLARATION OF ASSISTING METHODS IN THE PROGRAM
-/*Prints the final message for the customer if everything was successful */
-void  print_complete_transaction(int cid, const int* seats, int seats_total)
-{
-    printf("Your reservation has been completed. \nid customer is:  %d \nand your seats are: ", cid);
-    for (int i = 0; i < no_seats; i++)
-    {
-        if (seats[i] == cid) printf("%d seat, ", i);
-    }
-    printf("\nThe total amount is  %.2f € \n\n", seats_total*cost_per_seat);
-
-}
-
-void print_fail_no_available_seats(){
-    printf("Your reservation failed due to no availability of seats.")
-}
-
-void print_fail_credit_card(){
-    printf("Your reservation failed due to credit card issues.")
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#define NO_TEL 3;
+#define NO_CASH 2;
+#define NO_SEATS_PER_ROW 10;
+#define NO_ZONE_ALPHA 10;
+#define NO_ZONE_BETA 20;
+#define P_ZONE_ALPHA 0.3F;
+#define P_CARD_SUCCESS 0.9F;
+#define COST_PER_SEAT_ZONEA 30UL;
+#define COST_PER_SEAT_ZONEB 20UL;
+#define NO_SEAT_LOW 1;
+#define NO_SEAT_HIGH 5;
+#define TIME_RES_HIGH 1L;
+#define TIME_RES_HIGH 5L;
+#define TIME_SEAT_LOW 5L;
+#define TIME_SEAT_HIGH 13L;
+#define TIME_CASH_LOW 4L;
+#define TIME_CASH_HIGH 8L;
