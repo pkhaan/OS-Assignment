@@ -12,10 +12,10 @@
 */
 int *id;
 unsigned int randSeed;
-int Ncust;
+int Num;
 //Varables of Usage from the system
 
-void errorHandler(int answer);
+
 
 //Mutex Initialization
 /*
@@ -49,9 +49,11 @@ int totalClientWating;
 int availableSeats;
 int exchangeCnt; //transaction ID in increasing order
 
+void errorHandler(int answer);
+int reserveSeats(int client_id, int sum_of_seats, int * zone, int cost, int client_seats);
 
-int reserveSeats(int client, int no_seats);
 
+//In this function we make the call between client and system 
 void* run (void* threadID);{
 
 		    int id = *(int *)threadId; // int *id = (int *)threadId;
@@ -71,45 +73,61 @@ void* run (void* threadID);{
 		 clock_gettime(CLOCK_REALTIME, &threadStart);
 		
 		answer = pthread_mutex_lock(&mutex_no_available_telephones);
-		errorHandler(int answer);
-		printf("The client's id is: %d \n",id);
+		errorHandler(int answer);//function the checks locking status of mutex
+		//printf("The client's id is: %d \n",id);
 
 
 //In here we will store the client that is immediately connected to the call
 	while(available_tel <= 0)
 		{
-		pthread_cond_wait(& availableCondTelephones ,&mutex_no_available_telephones);
+		pthread_cond_wait(&availableCondTelephones ,&mutex_no_available_telephones);
 		}
 	available_tel--;
 	clock_gettime(CLOCK_REALTIME, &service_time); 
-
+//---------------------------------------------------------------------------------------
 
 		 //Randomize the booking procedure and initiate the phone call
-	int randomSeats= rand_r(&seed) % NO_SEAT_HIGH + NO_SEAT_LOW;
-	sleep(rand_r(&seed) % TIME_SEAT_HIGH + TIME_SEAT_LOW);
+	int randomSeats = rand_r(&randSeed) % NO_SEAT_HIGH + NO_SEAT_LOW;
+	sleep(rand_r(&randSeed) % TIME_SEAT_HIGH + TIME_SEAT_LOW);
 
 
 	answer = pthread_mutex_unlock(&mutex_no_available_telephones);
 	errorHandler(answer);
-	//clock_gettime(CLOCK_REALTIME, &waiting_time);
+	clock_gettime(CLOCK_REALTIME, &waiting_time);
 
 
-	double zoneSelect = (rand_r(&seed) % 100)/100.0f; //This is the input of the user in order to choose a random zone 
-	double * zone;
+	double zoneSelect = (rand_r(&randSeed) % 100)/100.0f; //This is the input of the user in order to choose a random zone 
+	double * zone;//preselected zone 
 	double cost;
-	int cnt;
+	int sum_of_seats;
 
-	pthread_mutex_t mutex_zone;
+	pthread_mutex_t mutex_zone;//init mutex 
+
+
+	//In here we will have to check for the availability of the zones depending on the zones 
+	//This part computes the probability of availability 
+		
+
+     if (zoneSelect <= P_ZONE_ALPHA){
+		 zone = NO_ZONE_ALPHA;
+		 mutex_zone = mutex_zoneA;
+		 cost = COST_PER_SEAT_ZONE_A;
+	 }
+	else {
+	     zone = NO_ZONE_BETA;
+		 mutex_zone = mutex_zoneB;
+		 cost = COST_PER_SEAT_ZONE_B;	
+	}
+
+	answer = pthread_mutex_lock(&mutex_zone);
+	
+
 
 
 
 
 
 }
-
-
-
-
 
 
 
@@ -123,9 +141,25 @@ int main(int argc, char *argv[]){
 
 }
 
+
+
+int reserveSeats(int client_id, int sum_of_seats, int * zone, int cost, int client_seats){
+     
+	int position;
+	int sum_of_seats;
+	bool done; //validity check of whether we have seats available
+	rows = sum_of_seats / client_seats;
+
+	for(int i = 0; i < rows; i++){
+		temp_sum = 0;
+		for(int position = 0; position < client_seats; position++){
+
+		}
+	}
+
+
+
 }
-
-
 
 
 void errorHandler(int answer)

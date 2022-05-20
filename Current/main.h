@@ -17,8 +17,8 @@ In here we store tha data needed for the assignment
 #define NO_ZONE_BETA 20;
 #define P_ZONE_ALPHA 0.3F;
 #define P_CARD_SUCCESS 0.9F;
-#define COST_PER_SEAT_ZONEA 30UL;
-#define COST_PER_SEAT_ZONEB 20UL;
+#define COST_PER_SEAT_ZONE_A 30UL;
+#define COST_PER_SEAT_ZONE_B 20UL;
 #define NO_SEAT_LOW 1;
 #define NO_SEAT_HIGH 5;
 #define TIME_RES_HIGH 1L;
