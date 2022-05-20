@@ -86,14 +86,20 @@ void* run (void* threadID);{
 
 		 //Randomize the booking procedure and initiate the phone call
 	int randomSeats= rand_r(&seed) % NO_SEAT_HIGH + NO_SEAT_LOW;
-	int randomTime = rand_r(&seed) % TIME_SEAT_HIGH + TIME_SEAT_LOW;
-	sleep(randomTime);
+	sleep(rand_r(&seed) % TIME_SEAT_HIGH + TIME_SEAT_LOW);
 
 
 	answer = pthread_mutex_unlock(&mutex_no_available_telephones);
 	errorHandler(answer);
-	
+	//clock_gettime(CLOCK_REALTIME, &waiting_time);
 
+
+	double zoneSelect = (rand_r(&seed) % 100)/100.0f; //This is the input of the user in order to choose a random zone 
+	double * zone;
+	double cost;
+	int cnt;
+
+	pthread_mutex_t mutex_zone;
 
 
 
