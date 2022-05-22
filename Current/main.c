@@ -13,6 +13,9 @@
 int *id;
 unsigned int randSeed;
 int Num;
+//seats per every zone
+int * seatsA;
+int * seatsB;
 //Varables of Usage from the system
 
 
@@ -40,21 +43,110 @@ pthread_mutex_t mutex_zoneB = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t availableCondTelephones = PTHREAD_COND_INITIALIZER;
 pthread_cond_t availableCondCashiers = PTHREAD_COND_INITIALIZER;
 
-int available_tel = TEL_N;
+int available_tel = NO_TEL;
 int cashiers_available = N_CASH;
 int deposit;
 double avgWaitTime = 0; //Averace Client Waiting Time
 double avgServeTime = 0; //Averace Client Servicing Time
-int totalClientWating;
+int totalClientWaiting;
 int availableSeats;
 int exchangeCnt; //transaction ID in increasing order
+int seats[NO_SEATS_PER_ROW][NO_ZONE_ALPHA + NO_ZONE_BETA];
 
 void errorHandler(int answer);
 int reserveSeats(int client_id, int sum_of_seats, int * zone, int cost, int client_seats);
 
 
+int main(int argc, char *argv[]){
+
+		int rc;
+
+    int CLIENT_N = atoi(argv[1]);
+    id = (int*)malloc(CLIENT_N * sizeof(int));
+    
+	int client_id[CLIENT_N];
+	pthread_t threads[CLIENT_N];
+	for(int i = 0; i < CLIENT_N; ++i)
+
+	{
+		client_id[i] = i;
+		threads[i] = i;
+	}
+
+
+
+
+    seed = (unsigned int) atoi(argv[2]);
+
+			
+for(i = 0; i < 100; i++){
+	seatsA[i] = -1;
+}
+
+for(j = 0; j < 200; j++){
+	seatsB[j] = -1;
+}
+
+
+
+
+
+
+
+
+
+/*Create threads*/
+	pthread_t threads[CLIENT_N];
+	for(int i=0; i<CLIENT_N; ++i)
+	{
+		pthread_create(&threads[i], NULL, &run, &client_id[i]);
+	}
+
+/*Wait all threads to finish*/
+	for(int i=0; i<CLIENT_N; ++i)
+	{
+		pthread_join(threads[i], NULL);
+	}
+//This finishes the procedure of the program
+
+
+
+
+
+
+
+
+
+free(seats);//release allocated memory 
+return 0;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //In this function we make the call between client and system 
-void* run (void* threadID);{
+void* run (void* clientID){ //clientID binds with the threadID in main 
 
 		    int id = *(int *)threadId; // int *id = (int *)threadId;
 
@@ -62,11 +154,14 @@ void* run (void* threadID);{
 			int done = done_complete;
 
 			struct timespec threadStart;//for client
-			struct timespec service_time;
-			struct timespec cashier_start;
-			struct timespec telThreadStart;
-			struct timespec telThreadEnd;
 
+			struct timespec service_time;//for client
+
+			struct timespec cashier_start;//for cashier
+
+			struct timespec telThreadStart;
+
+			struct timespec telThreadEnd;//for client
 
 			struct timespec threadEnd;//for client
 
@@ -83,7 +178,10 @@ void* run (void* threadID);{
 		pthread_cond_wait(&availableCondTelephones ,&mutex_no_available_telephones);
 		}
 	available_tel--;
+
+	//It begins service time
 	clock_gettime(CLOCK_REALTIME, &service_time); 
+//---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
 
 		 //Randomize the booking procedure and initiate the phone call
@@ -97,9 +195,10 @@ void* run (void* threadID);{
 
 
 	double zoneSelect = (rand_r(&randSeed) % 100)/100.0f; //This is the input of the user in order to choose a random zone 
-	double * zone;//preselected zone 
+	int * zone;//preselected zone 
 	double cost;
-	int sum_of_seats;
+	int seats_per_zone;
+
 
 	pthread_mutex_t mutex_zone;//init mutex 
 
@@ -109,19 +208,36 @@ void* run (void* threadID);{
 		
 
      if (zoneSelect <= P_ZONE_ALPHA){
-		 zone = NO_ZONE_ALPHA;
+		 zone = NO_ZONE_ALPHA; 
 		 mutex_zone = mutex_zoneA;
+		 seats_per_zone = NO_ZONE_ALPHA * NO_SEATS_PER_ROW;
 		 cost = COST_PER_SEAT_ZONE_A;
 	 }
 	else {
 	     zone = NO_ZONE_BETA;
 		 mutex_zone = mutex_zoneB;
+		 seats_per_zone = NO_ZONE_BETA * NO_SEATS_PER_ROW;
 		 cost = COST_PER_SEAT_ZONE_B;	
 	}
 
-	answer = pthread_mutex_lock(&mutex_zone);
+    answer = pthread_mutex_lock(&mutex_zone);
+	errorHandler(answer);
+
+	int value = reserveSeats(client_id, seats_per_zone, zone, randomSeats);
+
+	answer = pthread_mutex_unlock(&mutex_zone);
+	errorHandler(answer);
+
+	pthread_mutex_lock(&mutex_no_available_telephones);
+	available_tel++;
+	pthread_cond_signal(&availableCondTelephones);
+	pthread_mutex_unlock(mutex_no_available_telephones);
+
+	clock_gettime(CLOCK_REALTIME, &telThreadEnd);//the phone call ends here
+	clock_gettime(CLOCK_REALTIME, &threadEnd);//for client service
+	clock_gettime(CLOCK_REALTIME, &cashier_start);//starts assigning cashier
 	
-
+   
 
 
 
@@ -131,34 +247,36 @@ void* run (void* threadID);{
 
 
 
-
-
-
-
-
-int main(int argc, char *argv[]){
-		
-
-}
-
-
-
-int reserveSeats(int client_id, int sum_of_seats, int * zone, int cost, int client_seats){
+int reserveSeats(int client_id, int sum_of_seats, int * zone, int client_seats){
      
-	int position;
-	int sum_of_seats;
-	bool done; //validity check of whether we have seats available
-	rows = sum_of_seats / client_seats;
+	int rows = 300 /  NO_SEATS_PER_ROW;
 
-	for(int i = 0; i < rows; i++){
-		temp_sum = 0;
-		for(int position = 0; position < client_seats; position++){
+	 int totalSeats;
 
+
+
+		for(int i = 0; i < rows*10; i++){
+			
+
+				if(zone[i] == -1 && (i % 10 == 1)){
+				totalSeats++;	
+			
+				}else{totalSeats = 0;}
+
+				if(totalSeats == 0 && i % 10 == 0){
+					totalSeats++;
+
+				}
+	           
+
+
+	        
+			if(totalSeats == client_seats){
+				for(j = totalSeats, j > 0, --j){
+				zone[i - j] = client_id;
+				break;
+			}
 		}
-	}
-
-
-
 }
 
 
