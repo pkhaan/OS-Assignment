@@ -28,6 +28,22 @@ int * seatsB;
  *Console Output->Lock(Screen)
  * Services
  */
+
+
+#define seats_completed 300; //const int seats_found_success = 200;
+#define done -1; //const int flag_ok = 0;
+#define availability 0;
+#define client -2;
+#define full -3;
+
+
+
+
+
+
+
+
+
 pthread_mutex_t mutex_no_available_telephones = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_cashiers = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_seats_available = PTHREAD_MUTEX_INITIALIZER;
@@ -236,7 +252,7 @@ void* run (void* clientID){ //clientID binds with the threadID in main
 	clock_gettime(CLOCK_REALTIME, &telThreadEnd);//the phone call ends here
 	clock_gettime(CLOCK_REALTIME, &threadEnd);//for client service
 	clock_gettime(CLOCK_REALTIME, &cashier_start);//starts assigning cashier
-	
+
    
 
 
@@ -274,9 +290,13 @@ int reserveSeats(int client_id, int sum_of_seats, int * zone, int client_seats){
 			if(totalSeats == client_seats){
 				for(j = totalSeats, j > 0, --j){
 				zone[i - j] = client_id;
-				break;
+				}
+				return 0;//true statement
 			}
+
+		
 		}
+		return -1;//false statement ## (error handling values)
 }
 
 
