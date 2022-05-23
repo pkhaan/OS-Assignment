@@ -56,11 +56,15 @@ pthread_mutex_t terminalMutex = PTHREAD_MUTEX_INITIALIZER;\
 pthread_mutex_t mutex_zoneA= PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_zoneB = PTHREAD_MUTEX_INITIALIZER;
 
+pthread_mutex_t mutex_full_theater = PTHREAD_MUTEX_INITIALIZER;//pthread_mutex_t mutex_transactions_no_sold_out_case= PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_full_seats = PTHREAD_MUTEX_INITIALIZER;//pthread_mutex_t mutex_transactions_no_adequate_seats_case = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_success = PTHREAD_MUTEX_INITIALIZER;//pthread_mutex_t mutex_transactions_no_succesfull_trans = PTHREAD_MUTEX_INITIALIZER;
+
 pthread_cond_t availableCondTelephones = PTHREAD_COND_INITIALIZER;
 pthread_cond_t availableCondCashiers = PTHREAD_COND_INITIALIZER;
 
 int available_tel = NO_TEL;
-int cashiers_available = N_CASH;
+int cashiers_available = NO_CASH;
 int deposit;
 double avgWaitTime = 0; //Averace Client Waiting Time
 double avgServeTime = 0; //Averace Client Servicing Time
@@ -68,6 +72,18 @@ int totalClientWaiting;
 int availableSeats;
 int exchangeCnt; //transaction ID in increasing order
 int seats[NO_SEATS_PER_ROW][NO_ZONE_ALPHA + NO_ZONE_BETA];
+
+
+int full_theater; //statistics
+int full_seats;
+int cnt_transaction;
+
+/*
+int no_sold_out_case; //statistics
+int no_adequate_seats_case;
+int no_succesfull_trans;
+*/
+
 
 void errorHandler(int answer);
 int reserveSeats(int client_id, int sum_of_seats, int * zone, int cost, int client_seats);
@@ -253,9 +269,42 @@ void* run (void* clientID){ //clientID binds with the threadID in main
 	clock_gettime(CLOCK_REALTIME, &threadEnd);//for client service
 	clock_gettime(CLOCK_REALTIME, &cashier_start);//starts assigning cashier
 
-   
+   switch(answer){
 
+	case full_seats_check :
+		   //There are not seats
+		flag = flag_not_available_seats;
+		
+		answer = pthread_mutex_lock(&mutex_full_seats);
+		errorHandler(answer);
+		full_seats++;
+		answer = pthread_mutex_unlock(&mutex_full_seats);
+		errorHandler(answer);
 
+	case full_theater_check :
+
+		flag = flag_sold_out; 
+		answer = pthread_mutex_lock(&mutex_full_theater);
+		errorHandler(answer);
+		full_theater++;
+		answer = pthread_mutex_unlock(&mutex_full_theater);
+		errorHandler(answer);
+
+	default:
+
+		   answer = pthread_mutex_unlock(&mutex_cashiers);
+	        errorHandler(answer);
+
+			
+        	while(cashiers_available <= 0)
+		{
+			pthread_cond_wait(&availableCondCashiers ,&mutex_cashiers); //Block until are available cashiers
+	    	}
+		    cashiers_available--;
+	    	answer = pthread_mutex_unlock(&mutex_cashiers);
+	    	errorHandler(answer);
+
+   }
 
 
 
@@ -281,7 +330,6 @@ int reserveSeats(int client_id, int sum_of_seats, int * zone, int client_seats){
 
 				if(totalSeats == 0 && i % 10 == 0){
 					totalSeats++;
-
 				}
 	           
 
