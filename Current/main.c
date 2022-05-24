@@ -94,7 +94,8 @@ int no_succesfull_trans;
 int reserveSeats(int client_id, int sum_of_seats, int * zone, int cost, int client_seats);
 void errorHandler(int answer);
 void full_theater_func();
-
+void availabilityError();
+ void transactionError()
 
 int main(int argc, char *argv[]){
 
@@ -105,12 +106,14 @@ int main(int argc, char *argv[]){
     
 	int client_id[CLIENT_N];
 	pthread_t threads[CLIENT_N];
-	for(int i = 0; i < CLIENT_N; ++i)
+	for(int i = 0; i < CLIENT_N; i++)
 
 	{
 		client_id[i] = i;
 		threads[i] = i;
 	}
+
+
     seed = (unsigned int) atoi(argv[2]);
 
 
@@ -379,42 +382,37 @@ void* run (void* clientID){ //clientID binds with the threadID in main
 
 
 int reserveSeats(int client_id, int sum_of_seats, int * zone, int client_seats){
-     
-	int rows = 300 /  NO_SEATS_PER_ROW;
 
-	 int totalSeats;
-
-
-
-		for(int i = 0; i < rows*10; i++){
-			
-
-				if(zone[i] == -1 && (i % 10 == 1)){
-				totalSeats++;	
-			
-				}else{totalSeats = 0;}
-
-				if(totalSeats == 0 && i % 10 == 0){
-					totalSeats++;
-				}
-	           
+		bool flag_end_search;
+		bool flag_for_switching_row;
+		bool maxed_out;
 
 
-	        
-			if(totalSeats == client_seats){
-				for(j = totalSeats, j > 0, --j){
-				zone[i - j] = client_id;
-				}
-				return 0;//true statement
-			}
+		//int map = sum_of_seats / NO_SEATS_PER_ROW;
+		int position_of_pointer = 0;
+		int seats_stored;
+		int returnPosition;//flag
 
-		
+
+
+		for (int i = 0; i < sum_of_seats / NO_SEATS_PER_ROW; i++){
+
+
+
+
+
+
+
+
 		}
-		return -1;//false statement ## (error handling values)
+
+
+
+
+
+
+	
 }
-
-
-
 
 //release all the seats booked from customer with id: cid 
 void releaseReservedSeats(int client_id, int sum_of_seats, int * zone)
@@ -422,7 +420,7 @@ void releaseReservedSeats(int client_id, int sum_of_seats, int * zone)
 	for(int i=0;i < sum_of_seats; i++)
 	{
 		if(zone[i] == client_id)  {
-			zone[i] = -1;
+			zone[i] = -1;//empty the seats
 		}
 	}
 }
