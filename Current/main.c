@@ -12,13 +12,14 @@
 */
 int *id;
 unsigned int randSeed;
-int Num;
+//int Num;
 //seats per every zone
 int * seatsA;
 int * seatsB;
-//Varables of Usage from the system
+//Variables of Usage from the system
 
-
+long int tv_sec;
+long int tv_usec;
 
 //Mutex Initialization
 /*
@@ -31,17 +32,21 @@ int * seatsB;
 
 
 #define seats_completed 300; //const int seats_found_success = 200;
-#define done -1; //const int flag_ok = 0;
+#define done 0; //const int flag_ok = 0;
 #define availability 0;
 #define client -2;
 #define full -3;
 
 
+/*const int flag_not_available_seats = -1;
 
+const int flag_customer_did_not_pay = -2;
 
+const int flag_sold_out = -3;
 
+const int seats_found_success = 200;
 
-
+const int flag_ok = 0;*/
 
 
 pthread_mutex_t mutex_no_available_telephones = PTHREAD_MUTEX_INITIALIZER;
@@ -66,12 +71,12 @@ pthread_cond_t availableCondCashiers = PTHREAD_COND_INITIALIZER;
 int available_tel = NO_TEL;
 int cashiers_available = NO_CASH;
 int deposit;
-double avgWaitTime = 0; //Averace Client Waiting Time
-double avgServeTime = 0; //Averace Client Servicing Time
+double avgWaitTime = 0; //Average Client Waiting Time
+double avgServeTime = 0; //Average Client Servicing Time
 int totalClientWaiting;
 int availableSeats;
 int exchangeCnt; //transaction ID in increasing order
-int seats[NO_SEATS_PER_ROW][NO_ZONE_ALPHA + NO_ZONE_BETA];
+//int seats[NO_SEATS_PER_ROW][NO_ZONE_ALPHA + NO_ZONE_BETA];
 
 
 int full_theater; //statistics
@@ -85,8 +90,10 @@ int no_succesfull_trans;
 */
 
 
-void errorHandler(int answer);
+
 int reserveSeats(int client_id, int sum_of_seats, int * zone, int cost, int client_seats);
+void errorHandler(int answer);
+void full_theater_func();
 
 
 int main(int argc, char *argv[]){
@@ -104,77 +111,49 @@ int main(int argc, char *argv[]){
 		client_id[i] = i;
 		threads[i] = i;
 	}
-
-
-
-
     seed = (unsigned int) atoi(argv[2]);
 
-			
-for(i = 0; i < 100; i++){
+
+int number_of_seats_A = NO_SEATS_PER_ROW * NO_ZONE_ALPHA;
+int number_of_seats_B = NO_SEATS_PER_ROW * NO_ZONE_BETA;
+
+seats_A = (int*)malloc(sizeof(int)*number_of_seats_A);
+for(i = 0; i < NO_SEATS_PER_ROW * NO_ZONE_ALPHA ; i++){
 	seatsA[i] = -1;
 }
 
-for(j = 0; j < 200; j++){
+seats_B = (int*)malloc(sizeof(int)*number_of_seats_B);
+for(j = 0; j < NO_SEATS_PER_ROW * NO_ZONE_BETA; j++){
 	seatsB[j] = -1;
 }
 
-
-
-
-
-
-
-
-
 /*Create threads*/
+
 	pthread_t threads[CLIENT_N];
-	for(int i=0; i<CLIENT_N; ++i)
+	for(int i=0; i < CLIENT_N; i++)
 	{
 		pthread_create(&threads[i], NULL, &run, &client_id[i]);
 	}
 
-/*Wait all threads to finish*/
-	for(int i=0; i<CLIENT_N; ++i)
+
+	for(int i = 1; i < CLIENT_N; i++)
 	{
 		pthread_join(threads[i], NULL);
 	}
 //This finishes the procedure of the program
 
+	
+
+
+//release allocated memory -> MALLOC USAGE
+free(seatsA);
+free(seatsB);
 
 
 
-
-
-
-
-
-free(seats);//release allocated memory 
 return 0;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //In this function we make the call between client and system 
@@ -183,6 +162,7 @@ void* run (void* clientID){ //clientID binds with the threadID in main
 		    int id = *(int *)threadId; // int *id = (int *)threadId;
 
 			int rc;
+
 			int done = done_complete;
 
 			struct timespec threadStart;//for client
@@ -232,7 +212,7 @@ void* run (void* clientID){ //clientID binds with the threadID in main
 	int seats_per_zone;
 
 
-	pthread_mutex_t mutex_zone;//init mutex 
+	pthread_mutex_t mutex_per_zone;//init mutex 
 
 
 	//In here we will have to check for the availability of the zones depending on the zones 
@@ -307,6 +287,92 @@ void* run (void* clientID){ //clientID binds with the threadID in main
    }
 
 
+//Cashier from now on.
+		clock_gettime(CLOCK_REALTIME, &cashier_start);  //track starting time for cashier
+		//This bool checks if the payment was completed 
+		bool done_payment = rand_r(&seed) % 100 / 100.0f <= P_CARD_SUCCESS;  //Start paying
+
+		if(!done_payment)
+		{//Print user didn't pay
+			flag = flag_customer_did_not_pay ;
+			//release seats
+			response_code = pthread_mutex_lock(&mutex_per_zone);
+			errorHandler(answer);
+	  		//releaseBookedSeats(zone, total_seats_in_zone,  cid); //Release booked seats
+			answer = pthread_mutex_unlock(&mutex_per_zone);
+			errorHandler(answer);
+		}
+        
+		else{
+
+			answer = pthread_mutex_lock(&mutex_success);
+			errorHandler(answer);
+			cnt_transaction++;
+			answer = pthread_mutex_unlock(&mutex_success);
+			errorHandler(answer);
+			
+			//todo update transactions
+			//Update balance
+			answer = pthread_mutex_lock(&account_balance);
+			errorHandler(answer);
+			deposit += randomSeats * cost; //User pay
+			answer = pthread_mutex_unlock(&account_balance);
+			errorHandler(answer);
+		}
+
+		answer = pthread_mutex_lock(&mutex_cashiers);
+		errorHandler(answer);
+	    cashiers_available++;
+	    pthread_cond_signal(&availableCondCashiers);
+	   	answer = pthread_mutex_unlock(&mutex_cashiers);
+	    errorHandler(answer);
+	    clock_gettime(CLOCK_REALTIME, &threadEnd); //Track finish time
+
+
+
+
+//Print transaction info
+	answer = pthread_mutex_lock(&terminalMutex);
+	errorHandler(answer);
+	if(done == full_theater)
+	{       
+		full_theater_func();
+	}
+	else if(done == cnt_transaction)
+	{
+		 transactionError();
+	}
+	else if(done == full_seats)
+	{
+
+		availabilityError();	
+	}
+	else
+	{
+	     completion_imminent(id, zone, zoneSelect, total_seats_in_zone, cost_zone_per_seat); //TODO we need to pass the zone as well,
+	}
+	answer = pthread_mutex_unlock(&terminalMutex);
+	errorHandler(answer);
+
+	//update total_waiting_time
+	answer = pthread_mutex_lock(&time_on_hold);
+	errorHandler(answer);
+	avgWaitTime += (customer_serviced.tv_sec - customer_start.tv_sec) + (customer_cashier_start.tv_sec - customer_telephone_finish.tv_sec) ;
+	answer = pthread_mutex_unlock(&time_on_hold);
+	errorHandler(answer)
+
+	//update total_service_time
+	answer = pthread_mutex_lock(&total_time);
+	errorHandler(answer);
+	avgServeTime += (customer_finish.tv_sec - customer_serviced.tv_sec) + (customer_finish.tv_sec - customer_cashier_start.tv_sec);
+	answer = pthread_mutex_unlock(&total_time);
+	errorHandler(answer);
+
+	pthread_exit(NULL);
+
+
+
+
 
 }
 
@@ -348,6 +414,23 @@ int reserveSeats(int client_id, int sum_of_seats, int * zone, int client_seats){
 }
 
 
+
+
+//release all the seats booked from customer with id: cid 
+void releaseReservedSeats(int client_id, int sum_of_seats, int * zone)
+{
+	for(int i=0;i < sum_of_seats; i++)
+	{
+		if(zone[i] == client_id)  {
+			zone[i] = -1;
+		}
+	}
+}
+
+
+
+
+
 void errorHandler(int answer)
 {
 	if (answer != 0) 
@@ -356,4 +439,41 @@ void errorHandler(int answer)
 		pthread_exit(&answer);
 	}
 }
+
+void completion_imminent(int client_id, const int* map, int sum_of_seats, int seats_per_zone, double cost)
+{
+	printf("[Success]: \n seats reserved %d \n for client: ", client_id);
+	for (int i = 0; i < zone_total_seats; i++)
+	{
+		if (map[i] == client_id){
+			printf("%d seat, ", i);
+			}
+		 
+	}
+	printf("\nPayment Amount: ", sum_of_seats * cost);
+
+}
+
+
+
+
+
+
+void full_theater_func()
+{
+	printf("Theater is full, no availability\n");
+}
+
+void availabilityError()
+{
+    printf("the seats are all reserved");
+}
+
+ void transactionError(){
+	 printf("payment failed due to credit card implications")
+ }
+
+
+
+
 
