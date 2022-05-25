@@ -102,6 +102,11 @@ int main(int argc, char *argv[]){
 		int rc;
 
     int CLIENT_N = atoi(argv[1]);
+		if (CLIENT_N <= 0) {
+		printf("TRY AGAIN: Client number must be positive\n");
+		exit(-1);
+	}
+
     id = (int*)malloc(CLIENT_N * sizeof(int));
     
 	int client_id[CLIENT_N];
@@ -121,12 +126,12 @@ int number_of_seats_A = NO_SEATS_PER_ROW * NO_ZONE_ALPHA;
 int number_of_seats_B = NO_SEATS_PER_ROW * NO_ZONE_BETA;
 
 seats_A = (int*)malloc(sizeof(int)*number_of_seats_A);
-for(i = 0; i < NO_SEATS_PER_ROW * NO_ZONE_ALPHA ; i++){
+for(i = 0; i < number_of_seats_A ; i++){
 	seatsA[i] = -1;
 }
 
 seats_B = (int*)malloc(sizeof(int)*number_of_seats_B);
-for(j = 0; j < NO_SEATS_PER_ROW * NO_ZONE_BETA; j++){
+for(j = 0; j < number_of_seats_B; j++){
 	seatsB[j] = -1;
 }
 
@@ -144,6 +149,67 @@ for(j = 0; j < NO_SEATS_PER_ROW * NO_ZONE_BETA; j++){
 		pthread_join(threads[i], NULL);
 	}
 //This finishes the procedure of the program
+printf("##########################################################################\n");
+printf("##########################################################################\n");
+printf("#################################THEATER##################################\n");
+printf("In here we map the theater per zone and we assign the seat to each CLIENT\n");
+printf("Πλάνο θέσεων για ζώνη Α \n");
+	for (int i = 0; i < number_of_seats_A; i++) 
+	{	
+		if(seats_A[i] != -1){
+			printf("The Following client is assigned to the %d seat %d \n", i, seats_A[i]);
+		}
+		else{
+			printf("RESERVED", i);	
+		}
+		
+	
+	for (int i = 0; i < number_of_seats_B; i++) 
+	{	
+		if(seats_A[i] != -1){
+			printf("The Following client is assigned to the %d seat %d \n", i, seats_B[i]);
+		}
+		else{
+			printf("RESERVED", i);	
+		}
+		
+
+//int available_tel = NO_TEL;
+//int cashiers_available = NO_CASH;
+//int deposit;
+//double avgWaitTime = 0; //Average Client Waiting Time
+//double avgServeTime = 0; //Average Client Servicing Time
+//int totalClientWaiting;
+//int serviceTime
+//int availableSeats;
+//int exchangeCnt;
+
+printf(deposit);
+printf(totalClientWaiting / CLIENT_N);
+printf(serviceTime / CLIENT_N);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	
 
@@ -425,6 +491,7 @@ int reserveSeats(int client_id, int sum_of_seats, int * zone, int client_seats){
 }//Change zone!
 		for(int temp = position_of_pointer; temp > index - client_seats; --temp){
 			zone[i] = client_id;
+			flag_for_switching_row = true;
 		}
 
 //release all the seats booked from customer with id: cid 
@@ -464,7 +531,6 @@ void completion_imminent(int client_id, const int* map, int sum_of_seats, int se
 	printf("\nPayment Amount: ", sum_of_seats * cost);
 
 }
-
 
 
 
