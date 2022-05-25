@@ -100,7 +100,8 @@ void availabilityError();
 int main(int argc, char *argv[]){
 
 		int rc;
-
+    if(argc != 3){printf("Error: Program takes 2 arguments"); return(0);}
+	
     int CLIENT_N = atoi(argv[1]);
 		if (CLIENT_N <= 0) {
 		printf("TRY AGAIN: Client number must be positive\n");
