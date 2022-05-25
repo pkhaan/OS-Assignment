@@ -33,7 +33,7 @@ long int tv_usec;
 
 #define seats_completed 300; //const int seats_found_success = 200;
 #define done 0; //const int flag_ok = 0;
-#define availability 0;
+#define availability -2;
 #define client -2;
 #define full -3;
 
@@ -384,35 +384,48 @@ void* run (void* clientID){ //clientID binds with the threadID in main
 int reserveSeats(int client_id, int sum_of_seats, int * zone, int client_seats){
 
 		bool flag_end_search;
-		bool flag_for_switching_row;
+		bool flag_for_switching_row = false;
 		bool maxed_out;
 
 
 		//int map = sum_of_seats / NO_SEATS_PER_ROW;
-		int position_of_pointer = 0;
 		int seats_stored;
+		bool flag_end_search = false;
+		int position_of_pointer = 0;
 		int returnPosition;//flag
 
 
+		int sum_seats;
+		bool max_so_far = false;
+		int flag;
+		int index;
+
 
 		for (int i = 0; i < sum_of_seats / NO_SEATS_PER_ROW; i++){
+				maxed_out = false;
+				seats_stored = 0;
+				for(int j = 0; j < NO_SEATS_PER_ROW; ++j){
+					if(zone[(i)*NO_SEATS_PER_ROW + j] == -1){
+						flag_end_search == true;
+						++seats_stored;
+						if(client_seats == seats_stored){
+							position_of_pointer = j + i * NO_SEATS_PER_ROW;
+							returnPosition = seats_completed;
+							flag_for_switching_row = true;
+							maxed_out = true;
+							break;
+						}
+					}else{seats_stored = 0; maxed_out = false;}
 
-
-
-
-
-
-
-
+				if(seats_stored == client_seats) break;
 		}
+		if(flag_end_search && returnPosition != seats_completed) return availability;
+		if(returnPosition != seats_completed && flag_end_search == true) return full;
 
-
-
-
-
-
-	
-}
+}//Change zone!
+		for(int temp = position_of_pointer; temp > index - client_seats; --temp){
+			zone[i] = client_id;
+		}
 
 //release all the seats booked from customer with id: cid 
 void releaseReservedSeats(int client_id, int sum_of_seats, int * zone)
