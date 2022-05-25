@@ -99,7 +99,7 @@ void availabilityError();
 
 int main(int argc, char *argv[]){
 
-		int rc;
+	int rc;
     if(argc != 3){printf("Error: Program takes 2 arguments"); return(0);}
 	
     int CLIENT_N = atoi(argv[1]);
@@ -154,7 +154,7 @@ printf("########################################################################
 printf("##########################################################################\n");
 printf("#################################THEATER##################################\n");
 printf("In here we map the theater per zone and we assign the seat to each CLIENT\n");
-printf("Πλάνο θέσεων για ζώνη Α \n");
+
 	for (int i = 0; i < number_of_seats_A; i++) 
 	{	
 		if(seats_A[i] != -1){
@@ -164,7 +164,7 @@ printf("Πλάνο θέσεων για ζώνη Α \n");
 			printf("RESERVED", i);	
 		}
 		
-	
+	}
 	for (int i = 0; i < number_of_seats_B; i++) 
 	{	
 		if(seats_A[i] != -1){
@@ -174,7 +174,7 @@ printf("Πλάνο θέσεων για ζώνη Α \n");
 			printf("RESERVED", i);	
 		}
 		
-
+	}
 //int available_tel = NO_TEL;
 //int cashiers_available = NO_CASH;
 //int deposit;
@@ -190,31 +190,6 @@ printf(totalClientWaiting / CLIENT_N);
 printf(serviceTime / CLIENT_N);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
 //release allocated memory -> MALLOC USAGE
 free(seatsA);
 free(seatsB);
@@ -223,9 +198,9 @@ free(seatsB);
 
 return 0;
 
+
 }
-
-
+	
 //In this function we make the call between client and system 
 void* run (void* clientID){ //clientID binds with the threadID in main 
 
@@ -544,11 +519,11 @@ void full_theater_func()
 
 void availabilityError()
 {
-    printf("the seats are all reserved");
+    printf("the seats are all reserved\n");
 }
 
  void transactionError(){
-	 printf("payment failed due to credit card implications")
+	 printf("payment failed due to credit card implications\n");
  }
 
 
