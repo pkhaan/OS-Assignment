@@ -33,3 +33,13 @@ In here we store tha data needed for the assignment
 #define TIME_SEAT_HIGH 13L;
 #define TIME_CASH_LOW 4L;
 #define TIME_CASH_HIGH 8L;
+
+
+
+
+
+
+
+
+
+
