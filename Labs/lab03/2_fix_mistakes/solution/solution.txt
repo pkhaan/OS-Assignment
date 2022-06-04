@@ -1,7 +1,0 @@
-Ta provlimata einai ta parakatw:
-(1) Den kaleitai h pthread_join ston patera twn threads me apotelesma me tin 
-oloklirwsi tou na stamatane kai ta threads paroti den exoun oloklirwsei tin ergasia
-tous.
-(2) H xrisi tis threadCounter metavlitis gia to perasma tou thread id einai lanthasmeni kathws i timi tis allazei se kathe perasma tou loop. Me apotelesma ta threads epeidi exoun ena pointer pou deixnei se auti tin timi na emfanizoun diaforetiki timi apo auti pou tha perimename. 
-Lysi sto provlima ayto einai i xrisi enos pinaka gia tin apothikeysi twn thread ids kai sti synexeia tis apostolis tis katallilis dieythinsis sti synartisi pou ektelei to thread (Deite kai ti lysi tis askisis 1).
-(3) Den ginetai free o pinakas me ta threads.
