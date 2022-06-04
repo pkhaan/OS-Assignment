@@ -1,4 +1,0 @@
-Gia na kanete compile ena programma pou xrisimopoiei ti vivliothiki pthread.h prepei na xrisimopoiisete
-tin parakatw entoli:
-
-gcc -Wall -pthread *.c

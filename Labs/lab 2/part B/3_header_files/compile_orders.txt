@@ -1,9 +1,0 @@
-#Aparaitito na dinetai ston compiler kai to .c me tin ylopoiisi twn synartisewn.
-gcc -Wall -o swap my_functions.c mainSwap.c
-#kai
-gcc -Wall -o printer my_functions.c mainArray.c
-
-#Ektelesi programmatos:
-./swap
-kai
-./printer
