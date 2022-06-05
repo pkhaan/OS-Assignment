@@ -458,11 +458,11 @@ int reserveSeats(int id, int * zone, int  _totalSeats, int _randomSeats){
 	bool flag = false;
 	int position_of_pointer;
 	int rows = _totalSeats / 10;
-
+       if(_randomSeats != 0){
 	for(int rowIndex = 0; rowIndex < rows; rowIndex++){
 		int sequential = 0;
 
-		for(int columnIndex=0; columnIndex < 10;columnIndex++){
+		for(int columnIndex=0; columnIndex < 10; columnIndex++){
 			if(zone[rowIndex*10 + columnIndex] == -99){
 				++sequential;
 			}else{
@@ -480,7 +480,7 @@ int reserveSeats(int id, int * zone, int  _totalSeats, int _randomSeats){
 			return 200;//success opcode
 		}
 	}
-
+}
 	return 404;//failure opcode
 }
 
